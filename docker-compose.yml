@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  db:
+    image: 'postgres:latest'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'  # Expose the PostgreSQL port
+
+  rails:
+    build: ./
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/docker/app
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/Doctor_appointment_development
+      RAILS_ENV: development
+
+volumes:
+  postgres: # named volume
